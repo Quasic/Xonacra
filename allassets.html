@@ -1,0 +1,26 @@
+<!DOCTYPE html><html><head><title>Arcanox extraction test</title>
+<script src="lib/jszip.min.js"></script>
+<script src="readArcanox.js"></script>
+</head><body>
+This tool displays the assets from Arcanox.apk, which is available from <a href="https://play.google.com/store/apps/details?id=de.juhugames.arcanox">Google Play</a>, although the game no longer works. This is just a tool to graphically show assets and names. It shows animations, but is glitchy. Bottom right whitespace is ommitted, causing some animations to resize, (and others would resize anyway,) making the page jump around a bit. This tool follows atlas file organization, though the game did not always. This animates different versions of some assets and shows some animations as different versions, because that's how they are organized in the apk, though that's not how the game handled them.
+<form onsubmit="return false;">Please choose Arcanox.apk file: <input type="file" id="zip-file-input" accept=".apk,.zip"></form>
+
+</body><script><!--
+var input=document.getElementById('zip-file-input');
+input.addEventListener('change', function(event) {
+	readArcanox(event.target.files[0],{assets:["background","dungeon_map","gui","ingame","island"]},loadedArcanox);
+});
+
+function loadedArcanox(b,atlasToDiv,bgDiv,atlas){
+	for(var i in atlas)if(atlas.hasOwnProperty(i)){
+                var div=document.getElementById(i);
+                if(!div){
+                        div=document.createElement("div");
+                        div.id=i;
+                        div.innerText=i;
+                        document.body.appendChild(div);
+                }
+                atlasToDiv(div,i);
+        }
+}
+//--></script></html>

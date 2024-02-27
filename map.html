@@ -1,0 +1,65 @@
+<!DOCTYPE html><html><head><title>Arcanox extraction test</title>
+<script src="lib/jszip.min.js"></script>
+<script src="readArcanox.js"></script>
+</head><body>
+Arcanox.apk, which is available from <a href="https://play.google.com/store/apps/details?id=de.juhugames.arcanox">Google Play</a>, but is no longer playable, had a map. This tool extracts that map from the apk and allows you to click on different parts to change their appearance. Also included is a bugged flag I think I saw in the game, a time or two.
+<form onsubmit="return false;">Please choose Arcanox.apk file: <input type="file" id="zip-file-input" accept=".apk,.zip"></form>
+
+</body><script><!--
+var input=document.getElementById('zip-file-input');
+input.addEventListener('change', function(event) {
+	readArcanox(event.target.files[0],{assets:["dungeon_map"]},loadedArcanox);
+});
+
+function bgMapDiv(div,o){
+	div.style.backgroundImage="url('"+o.src+"')";
+	div.style.backgroundSize=o.bx+"px "+o.by+"px";
+	div.style.backgroundRepeat="repeat";
+	div.style.backgroundPosition=(o.bx-o.x)+"px "+(o.by-o.y)+"px";
+	div.style.width=o.sx+"px";div.style.height=o.sy+"px";
+	div.style.position="absolute";
+	div.style.bottom=o.oy+"px";
+	div.style.left=o.ox+"px";
+};
+function bgMapDiv2(div,o,o2){
+	bgMapDiv(div,o);
+	div.onmousedown=function(){
+		bgMapDiv2(div,o2,o);
+	};
+}
+function bgMapDiv3(div,o,l,s){
+	var i=0,a=[
+		(o.bx-o.x)+"px "+(o.by-o.y)+"px"
+	];
+	for(i=0;i<l.length;i++)a.push(
+		(o.bx-l[i].x)+"px "+(o.by-l[i].y)+"px"
+	);
+	bgMapDiv(div,o);
+	i=s||0;
+	div.style.backgroundPosition=a[i];
+	div.onmousedown=function(){
+		div.style.backgroundPosition=a[++i<a.length?i:i=0];
+	};
+}
+
+function loadedArcanox(b,atlasToDiv,bgDiv,atlas){
+	var i;
+	if("assets/_dungeon_map"==b){
+		var c=document.createElement("div");
+		c.style.position="relative";
+		c.style.top=c.style.left=0;
+		atlasToDiv(c,"map_empty");
+		for(i=1;i<atlas.dungeon.length;i++){
+			d=document.createElement("div");
+			bgMapDiv2(d,atlas.dungeon_closed[i],atlas.dungeon[i]);
+			c.appendChild(d);
+		}
+		for(i=1;i<atlas.training.length;i++){
+			d=document.createElement("div");
+			bgMapDiv3(d,atlas.training[i],[atlas.white,{x:567,y:0},atlas.training_wip,atlas.training_available],2);
+			c.appendChild(d);
+		}
+		document.body.appendChild(c);
+	}
+}
+//--></script></html>
